@@ -18,11 +18,20 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { PaginatedUsers } from '../interfaces/paginated-users.interface';
+import { LoginUserDto } from '../dto/login-user.dto';
 
 @ApiTags('users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('login')
+  @ApiOperation({ summary: 'Login user' })
+  @ApiResponse({ status: 200, description: 'User logged in successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  async login(@Body() loginUserDto: LoginUserDto) {
+    return this.userService.login(loginUserDto.email, loginUserDto.password);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })

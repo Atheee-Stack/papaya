@@ -9,24 +9,39 @@ import { UpdateUserHandler } from './command-handlers/update-user.handler';
 import { DeleteUserHandler } from './command-handlers/delete-user.handler';
 import { GetUserHandler } from './query-handlers/get-user.handler';
 import { ListUsersHandler } from './query-handlers/list-users.handler';
+import { JwtService } from '@nestjs/jwt';
+import { AuthModule } from '@papaya/common/auth/auth/auth.module';
+import { LoggerModule } from '@papaya/common/logger/logger.module';
+import { LoginUserHandler } from './command-handlers/login-user.handler';
+import { JwtAuthModule } from '@papaya/common/auth/jwt.module';
+
 // Import event handlers if you have any
 
 const CommandHandlers = [
   CreateUserHandler,
   UpdateUserHandler,
   DeleteUserHandler,
+  LoginUserHandler,
 ];
 const QueryHandlers = [GetUserHandler, ListUsersHandler];
 const EventHandlers = []; // Add your event handlers here if any
 
 @Module({
-  imports: [CqrsModule, MikroOrmModule.forFeature([User])],
+  imports: [
+    CqrsModule,
+    MikroOrmModule.forFeature([User]),
+    AuthModule,
+    LoggerModule,
+    JwtAuthModule,
+  ],
   controllers: [UserController],
   providers: [
     UserService,
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventHandlers,
+    JwtService,
+    LoginUserHandler,
   ],
   exports: [UserService],
 })
