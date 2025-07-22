@@ -1,10 +1,26 @@
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ValidationFilter } from '@papaya/common/filters/validation.filter';
 import { AppModule } from 'apps/papaya/src/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Global validation pipeline
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      disableErrorMessages: process.env.NODE_ENV === 'production',
+    }),
+  );
+
+  // Global Authentication Filters
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new ValidationFilter(httpAdapter));
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -23,4 +39,8 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});

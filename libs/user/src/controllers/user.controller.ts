@@ -19,6 +19,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { PaginatedUsers } from '../interfaces/paginated-users.interface';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { IsUserExistPipe } from '@papaya/common/validators/is-user-exist.validator';
 
 @ApiTags('users')
 @Controller('users')
@@ -70,7 +71,9 @@ export class UserController {
     status: HttpStatus.NOT_FOUND,
     description: 'User not found',
   })
-  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
+  async findOne(
+    @Param('id', IsUserExistPipe) id: string,
+  ): Promise<UserResponseDto> {
     try {
       const user = await this.userService.getUser(id);
       return user;
@@ -117,7 +120,7 @@ export class UserController {
     description: 'User not found',
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', IsUserExistPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
     try {
@@ -140,7 +143,7 @@ export class UserController {
     status: HttpStatus.NOT_FOUND,
     description: 'User not found',
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', IsUserExistPipe) id: string): Promise<void> {
     try {
       await this.userService.deleteUser(id);
     } catch (error) {

@@ -14,6 +14,8 @@ import { AuthModule } from '@papaya/common/auth/auth/auth.module';
 import { LoggerModule } from '@papaya/common/logger/logger.module';
 import { LoginUserHandler } from './command-handlers/login-user.handler';
 import { JwtAuthModule } from '@papaya/common/auth/jwt.module';
+import { IsEmailUniqueConstraint } from '@papaya/common/validators/is-email-unique.validator';
+import { IsUserExistPipe } from '@papaya/common/validators/is-user-exist.validator';
 
 // Import event handlers if you have any
 
@@ -37,6 +39,8 @@ const EventHandlers = []; // Add your event handlers here if any
   controllers: [UserController],
   providers: [
     UserService,
+    IsEmailUniqueConstraint,
+    IsUserExistPipe,
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventHandlers,
